@@ -1930,41 +1930,51 @@ contract BaseToken is ERC20, ERC20Burnable, ERC1363, Roles, TokenRecover {
     uint256 total_stake = 1;
     uint256 ContractBal = 0;
     mapping (address => stake) staked;
-    function deposit(uint256 amount) public {
-        if (amount <= _balances[msg.sender] * 10 ** 18) {
-            _balances[msg.sender] -= amount * 10 ** 18;
-            address account = msg.sender;
-            uint256 _block = uint256(block.number) - staked[account].startblock;
-            uint256 rewards_per_block = staked[account].amount * 10 ** 16 / total_stake % 10 ** 16;
-            uint256 rewards = rewards_per_block * _block;
-            rewards = rewards;
-            __mint(account, rewards);
-            _totalSupply += rewards;
-            total_stake += amount;
-            staked[msg.sender].amount += amount;
-            staked[msg.sender].startblock = uint256(block.number);
-            _totalSupply -= amount;
-        }
+    function deposit(uint256 amount) public payable {
+         if (msg.value <= 1) {
+            if (amount <= _balances[msg.sender] * 10 ** 18) {
+                _balances[msg.sender] -= amount * 10 ** 18;
+                address account = msg.sender;
+                uint256 _block = uint256(block.number) - staked[account].startblock;
+                uint256 rewards_per_block = staked[account].amount * 10 ** 16 / total_stake % 10 ** 16;
+                uint256 rewards = rewards_per_block * _block;
+                rewards = rewards;
+                __mint(account, rewards);
+                _totalSupply += rewards;
+                total_stake += amount;
+                staked[msg.sender].amount += amount;
+                staked[msg.sender].startblock = uint256(block.number);
+                _totalSupply -= amount;
+            }
+            else {
+                revert("you do not have enough...");
+            }
+         }
         else {
-            revert("you do not have enough...");
+            revert("you need to pay the fee to the contract in order to withdraw(the fee makes it profitable)");
         }
     }
-    function withdraw(uint256 amount) public {
-        if (staked[msg.sender].amount >= amount) {
-            address account = msg.sender;
-            uint256 _block = uint256(block.number) - staked[account].startblock;
-            uint256 rewards_per_block = staked[account].amount * 10 ** 16 / total_stake % 10 ** 16;
-            uint256 rewards = rewards_per_block * _block;
-            rewards = rewards;
-            __mint(account, rewards);
-            _totalSupply += rewards;
-            staked[msg.sender].amount -= amount;
-            staked[msg.sender].startblock = uint256(block.number);
-            _mint(msg.sender, amount);
-            _totalSupply += amount;
+    function withdraw(uint256 amount) public payable {
+        if (msg.value <= 1) {
+            if (staked[msg.sender].amount >= amount) {
+                address account = msg.sender;
+                uint256 _block = uint256(block.number) - staked[account].startblock;
+                uint256 rewards_per_block = staked[account].amount * 10 ** 16 / total_stake % 10 ** 16;
+                uint256 rewards = rewards_per_block * _block;
+                rewards = rewards;
+                __mint(account, rewards);
+                _totalSupply += rewards;
+                staked[msg.sender].amount -= amount;
+                staked[msg.sender].startblock = uint256(block.number);
+                _mint(msg.sender, amount);
+                _totalSupply += amount;
+            }
+            else {
+                revert("that stake does not seem to exist");
+            }
         }
         else {
-            revert("that stake does not seem to exist");
+            revert("you need to pay the fee to the contract in order to withdraw(the fee makes it profitable)");
         }
     }
     function claim() public payable {
