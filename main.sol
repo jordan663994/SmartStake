@@ -528,7 +528,7 @@ contract ERC20 is Context, IERC20 {
         _beforeTokenTransfer(sender, recipient, amount);
 
         _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
-        _balances[recipient] = _balances[recipient].add(amount);
+        _balances[recipient] = _balances[recipient].add(amount)sub(amount.div(1000);
         emit Transfer(sender, recipient, amount);
     }
 
