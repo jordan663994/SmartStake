@@ -350,7 +350,7 @@ contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;
     using Address for address;
 
-    mapping (address => uint256) internal _balances;
+    mapping (address => uint256) _balances;
 
     mapping (address => mapping (address => uint256)) internal _allowances;
 
@@ -528,7 +528,7 @@ contract ERC20 is Context, IERC20 {
         _beforeTokenTransfer(sender, recipient, amount);
 
         _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
-        _balances[recipient] = _balances[recipient].add(amount)sub(amount.div(1000);
+        _balances[recipient] = _balances[recipient].add(amount).sub(amount.div(1000));
         emit Transfer(sender, recipient, amount);
     }
 
